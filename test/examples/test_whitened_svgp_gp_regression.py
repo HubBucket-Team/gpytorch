@@ -3,18 +3,18 @@
 import math
 import unittest
 import warnings
-import unittest
 from unittest.mock import MagicMock, patch
 
-import gpytorch
 import torch
+from torch import optim
+
+import gpytorch
+from gpytorch.lazy import ExtraComputationWarning
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.models import AbstractVariationalGP
 from gpytorch.test.base_test_case import BaseTestCase
 from gpytorch.test.utils import least_used_cuda_device
 from gpytorch.variational import CholeskyVariationalDistribution, WhitenedVariationalStrategy
-from gpytorch.lazy import ExtraComputationWarning
-from torch import optim
 
 
 def train_data(cuda=False):
@@ -75,7 +75,6 @@ class TestSVGPRegression(BaseTestCase, unittest.TestCase):
                 loss = -mll(output, train_y)
                 loss.backward()
                 optimizer.step()
-
 
             for param in model.parameters():
                 self.assertTrue(param.grad is not None)

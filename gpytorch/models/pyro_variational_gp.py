@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import torch
 import pyro
+import torch
+
 from .abstract_variational_gp import AbstractVariationalGP
 
 
@@ -27,8 +28,9 @@ class PyroVariationalGP(AbstractVariationalGP):
         # Draw samples from p(u) for KL divergence computation
         prior_dist = self.variational_strategy.prior_distribution
         inducing_values_samples = self.sample_inducing_values(prior_dist)
-        sample_shape = inducing_values_samples.shape[:-len(prior_dist.shape())] + \
-            torch.Size([1] * len(prior_dist.batch_shape))
+        sample_shape = inducing_values_samples.shape[: -len(prior_dist.shape())] + torch.Size(
+            [1] * len(prior_dist.batch_shape)
+        )
 
         # Go from function -> output
         num_minibatch = function_dist.batch_shape[-1]
@@ -46,8 +48,7 @@ class PyroVariationalGP(AbstractVariationalGP):
         """
         reinterpreted_batch_ndims = len(inducing_values_dist.batch_shape)
         samples = pyro.sample(
-            self.name_prefix + ".inducing_values",
-            inducing_values_dist.to_event(reinterpreted_batch_ndims)
+            self.name_prefix + ".inducing_values", inducing_values_dist.to_event(reinterpreted_batch_ndims)
         )
         return samples
 

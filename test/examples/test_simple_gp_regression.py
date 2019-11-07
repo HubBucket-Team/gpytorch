@@ -3,17 +3,18 @@
 import unittest
 from math import exp, pi
 
-import gpytorch
 import torch
+from torch import optim
+
+import gpytorch
+from gpytorch.constraints import Positive
 from gpytorch.distributions import MultivariateNormal
 from gpytorch.kernels import RBFKernel, ScaleKernel
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.means import ConstantMean
 from gpytorch.priors import SmoothedBoxPrior
-from gpytorch.constraints import Positive
 from gpytorch.test.base_test_case import BaseTestCase
 from gpytorch.test.utils import least_used_cuda_device
-from torch import optim
 
 
 class ExactGPModel(gpytorch.models.ExactGP):

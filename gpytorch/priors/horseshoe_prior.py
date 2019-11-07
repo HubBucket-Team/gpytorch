@@ -4,9 +4,10 @@ import math
 from numbers import Number
 
 import torch
-from gpytorch.priors.prior import Prior
 from torch.distributions import constraints
 from torch.nn import Module as TModule
+
+from gpytorch.priors.prior import Prior
 
 
 class HorseshoePrior(Prior):

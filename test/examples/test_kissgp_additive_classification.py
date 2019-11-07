@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 
-from math import exp
-
 import os
 import random
-import torch
 import unittest
+from math import exp
+
+import torch
+from torch import optim
 
 import gpytorch
-from torch import optim
+from gpytorch.distributions import MultivariateNormal
 from gpytorch.kernels import RBFKernel, ScaleKernel
 from gpytorch.likelihoods import BernoulliLikelihood
 from gpytorch.means import ConstantMean
-from gpytorch.priors import SmoothedBoxPrior
-from gpytorch.distributions import MultivariateNormal
 from gpytorch.models import AbstractVariationalGP
+from gpytorch.priors import SmoothedBoxPrior
 from gpytorch.variational import AdditiveGridInterpolationVariationalStrategy, CholeskyVariationalDistribution
 
 n = 64

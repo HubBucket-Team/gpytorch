@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import torch
-from ..lazy import CholLazyTensor
+
 from ..distributions import MultivariateNormal
-from .variational_distribution import VariationalDistribution
+from ..lazy import CholLazyTensor
 from ..utils.deprecation import _deprecate_kwarg_with_transform
+from .variational_distribution import VariationalDistribution
 
 
 class CholeskyVariationalDistribution(VariationalDistribution):

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import unittest
+
 import torch
-from gpytorch.likelihoods import BernoulliLikelihood
-from gpytorch.likelihoods import Likelihood
+
+from gpytorch.likelihoods import BernoulliLikelihood, Likelihood
 from gpytorch.test.base_likelihood_test_case import BaseLikelihoodTestCase
 
 

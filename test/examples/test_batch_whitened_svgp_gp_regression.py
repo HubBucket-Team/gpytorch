@@ -5,13 +5,14 @@ import random
 import unittest
 from math import pi
 
-import gpytorch
 import torch
+from torch import optim
+
+import gpytorch
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.models import AbstractVariationalGP
 from gpytorch.test.utils import least_used_cuda_device
 from gpytorch.variational import CholeskyVariationalDistribution, WhitenedVariationalStrategy
-from torch import optim
 
 
 def train_data(cuda=False):

@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
 
 import math
+
 import torch
+
 from .. import settings
+from ..distributions import MultivariateNormal
 from ..lazy import (
-    BatchRepeatLazyTensor, DiagLazyTensor, CachedCGLazyTensor, CholLazyTensor, PsdSumLazyTensor,
-    RootLazyTensor, ZeroLazyTensor
+    BatchRepeatLazyTensor,
+    CachedCGLazyTensor,
+    CholLazyTensor,
+    DiagLazyTensor,
+    PsdSumLazyTensor,
+    RootLazyTensor,
+    ZeroLazyTensor,
 )
 from ..module import Module
-from ..distributions import MultivariateNormal
 from ..utils.broadcasting import _mul_broadcast_shape
 from ..utils.cholesky import psd_safe_cholesky
 from ..utils.memoize import cached
@@ -32,6 +39,7 @@ class VariationalStrategy(Module):
     to exactly marginalize out the variational distribution. When the inducing points are constrained to a grid, we
     apply the derivation in Wilson et al., 2016 and exploit a deterministic relationship between f and u.
     """
+
     def __init__(self, model, inducing_points, variational_distribution, learn_inducing_locations=False):
         """
         Args:
@@ -67,9 +75,7 @@ class VariationalStrategy(Module):
         this is done simply by calling the user defined GP prior on the inducing point data directly.
         """
         out = self.model.forward(self.inducing_points)
-        res = MultivariateNormal(
-            out.mean, out.lazy_covariance_matrix.add_jitter()
-        )
+        res = MultivariateNormal(out.mean, out.lazy_covariance_matrix.add_jitter())
         return res
 
     def kl_divergence(self):
@@ -89,8 +95,7 @@ class VariationalStrategy(Module):
         """
         prior_dist = self.prior_distribution
         eval_prior_dist = torch.distributions.MultivariateNormal(
-            loc=prior_dist.mean,
-            scale_tril=psd_safe_cholesky(prior_dist.covariance_matrix),
+            loc=prior_dist.mean, scale_tril=psd_safe_cholesky(prior_dist.covariance_matrix)
         )
         self.variational_distribution.initialize_variational_distribution(eval_prior_dist)
 
@@ -141,10 +146,12 @@ class VariationalStrategy(Module):
             # This makes everything more computationally efficient
             if len(inducing_batch_shape) < len(induc_induc_covar.batch_shape):
                 index = tuple(0 for _ in range(len(induc_induc_covar.batch_shape) - len(inducing_batch_shape)))
-                repeat_size = torch.Size((
-                    tuple(induc_induc_covar.batch_shape[:len(index)])
-                    + tuple(1 for _ in induc_induc_covar.batch_shape[len(index):])
-                ))
+                repeat_size = torch.Size(
+                    (
+                        tuple(induc_induc_covar.batch_shape[: len(index)])
+                        + tuple(1 for _ in induc_induc_covar.batch_shape[len(index) :])
+                    )
+                )
                 induc_induc_covar = BatchRepeatLazyTensor(induc_induc_covar.__getitem__(index), repeat_size)
 
             # If we're less than a certain size, we'll compute the Cholesky decomposition of induc_induc_covar
@@ -159,8 +166,7 @@ class VariationalStrategy(Module):
                     self._mean_cache = induc_induc_covar.inv_matmul(mean_diff).detach()
 
                 predictive_mean = torch.add(
-                    test_mean,
-                    induc_data_covar.transpose(-2, -1).matmul(self._mean_cache).squeeze(-1)
+                    test_mean, induc_data_covar.transpose(-2, -1).matmul(self._mean_cache).squeeze(-1)
                 )
 
                 predictive_covar = ZeroLazyTensor(test_mean.size(-1), test_mean.size(-1))
@@ -176,23 +182,31 @@ class VariationalStrategy(Module):
                 with torch.no_grad():
                     eager_rhs = torch.cat([left_tensors, induc_data_covar], -1)
                     solve, probe_vecs, probe_vec_norms, probe_vec_solves, tmats = CachedCGLazyTensor.precompute_terms(
-                        induc_induc_covar, eager_rhs.detach(), logdet_terms=(not cholesky),
-                        include_tmats=(not settings.skip_logdet_forward.on() and not cholesky)
+                        induc_induc_covar,
+                        eager_rhs.detach(),
+                        logdet_terms=(not cholesky),
+                        include_tmats=(not settings.skip_logdet_forward.on() and not cholesky),
                     )
                     eager_rhss = [
-                        eager_rhs.detach(), eager_rhs[..., left_tensors.size(-1):].detach(),
-                        eager_rhs[..., :left_tensors.size(-1)].detach()
+                        eager_rhs.detach(),
+                        eager_rhs[..., left_tensors.size(-1) :].detach(),
+                        eager_rhs[..., : left_tensors.size(-1)].detach(),
                     ]
                     solves = [
-                        solve.detach(), solve[..., left_tensors.size(-1):].detach(),
-                        solve[..., :left_tensors.size(-1)].detach()
+                        solve.detach(),
+                        solve[..., left_tensors.size(-1) :].detach(),
+                        solve[..., : left_tensors.size(-1)].detach(),
                     ]
                     if settings.skip_logdet_forward.on():
                         eager_rhss.append(torch.cat([probe_vecs, left_tensors], -1))
-                        solves.append(torch.cat([probe_vec_solves, solve[..., :left_tensors.size(-1)]], -1))
+                        solves.append(torch.cat([probe_vec_solves, solve[..., : left_tensors.size(-1)]], -1))
                 induc_induc_covar = CachedCGLazyTensor(
-                    induc_induc_covar, eager_rhss=eager_rhss, solves=solves, probe_vectors=probe_vecs,
-                    probe_vector_norms=probe_vec_norms, probe_vector_solves=probe_vec_solves,
+                    induc_induc_covar,
+                    eager_rhss=eager_rhss,
+                    solves=solves,
+                    probe_vectors=probe_vecs,
+                    probe_vector_norms=probe_vec_norms,
+                    probe_vector_solves=probe_vec_solves,
                     probe_vector_tmats=tmats,
                 )
 
@@ -210,8 +224,7 @@ class VariationalStrategy(Module):
                 data_covariance = DiagLazyTensor((data_data_covar.diag() - interp_data_data_var).clamp(0, math.inf))
             else:
                 neg_induc_data_data_covar = torch.matmul(
-                    induc_data_covar.transpose(-1, -2).mul(-1),
-                    induc_induc_covar.inv_matmul(induc_data_covar)
+                    induc_data_covar.transpose(-1, -2).mul(-1), induc_induc_covar.inv_matmul(induc_data_covar)
                 )
                 data_covariance = data_data_covar + neg_induc_data_data_covar
             predictive_covar = PsdSumLazyTensor(predictive_covar, data_covariance)

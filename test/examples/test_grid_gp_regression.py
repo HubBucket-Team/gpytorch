@@ -5,10 +5,11 @@ import os
 import random
 import unittest
 
-import gpytorch
 import torch
-from gpytorch.test.utils import least_used_cuda_device
 from torch import optim
+
+import gpytorch
+from gpytorch.test.utils import least_used_cuda_device
 
 
 def make_data(grid, cuda=False):

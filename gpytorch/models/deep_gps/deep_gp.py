@@ -1,9 +1,10 @@
 import torch
+
+from gpytorch import settings
 from gpytorch.distributions import MultitaskMultivariateNormal
-from gpytorch.models import AbstractVariationalGP, GP
 from gpytorch.lazy import BlockDiagLazyTensor
 from gpytorch.likelihoods import Likelihood
-from gpytorch import settings
+from gpytorch.models import GP, AbstractVariationalGP
 
 
 class _DeepGPVariationalStrategy(object):
@@ -14,7 +15,8 @@ class _DeepGPVariationalStrategy(object):
     def sub_variational_strategies(self):
         if not hasattr(self, "_sub_variational_strategies_memo"):
             self._sub_variational_strategies_memo = [
-                module.variational_strategy for module in self.model.modules()
+                module.variational_strategy
+                for module in self.model.modules()
                 if isinstance(module, AbstractVariationalGP)
             ]
         return self._sub_variational_strategies_memo

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import torch
-from ..utils.interpolation import Interpolation, left_interp
-from ..lazy import InterpolatedLazyTensor
+
 from ..distributions import MultivariateNormal
+from ..lazy import InterpolatedLazyTensor
+from ..utils.interpolation import Interpolation, left_interp
 from .variational_strategy import VariationalStrategy
 
 

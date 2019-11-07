@@ -6,6 +6,7 @@ import random
 import unittest
 
 import torch
+
 from gpytorch.distributions import MultitaskMultivariateNormal, MultivariateNormal
 from gpytorch.lazy import DiagLazyTensor
 from gpytorch.test.utils import least_used_cuda_device

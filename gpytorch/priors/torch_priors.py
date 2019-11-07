@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from torch.distributions import Gamma, MultivariateNormal, Normal
+from torch.nn import Module as TModule
 
 from .prior import Prior
 from .utils import _bufferize_attributes, _del_attributes
-from torch.nn import Module as TModule
 
 MVN_LAZY_PROPERTIES = ("covariance_matrix", "scale_tril", "precision_matrix")
 

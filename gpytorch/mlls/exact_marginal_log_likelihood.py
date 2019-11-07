@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from .marginal_log_likelihood import MarginalLogLikelihood
-from ..likelihoods import _GaussianLikelihoodBase
 from ..distributions import MultivariateNormal
+from ..likelihoods import _GaussianLikelihoodBase
+from .marginal_log_likelihood import MarginalLogLikelihood
 
 
 class ExactMarginalLogLikelihood(MarginalLogLikelihood):

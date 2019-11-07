@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
+import functools
+import warnings
 from copy import deepcopy
 
-import functools
 import torch
-import warnings
-from ..module import Module
+
+from .. import settings
 from ..distributions import MultivariateNormal
+from ..module import Module
 from ..utils.deprecation import _ClassWithDeprecatedBatchSize
 from ..utils.quadrature import GaussHermiteQuadrature1D
-from .. import settings
 
 
 class _Likelihood(Module, _ClassWithDeprecatedBatchSize):
@@ -42,6 +43,7 @@ class _Likelihood(Module, _ClassWithDeprecatedBatchSize):
           then it is assumed that the input is the distribution :math:`f(x)`.
           This returns the *marginal* distribution `p(y|x)`.
     """
+
     def __init__(self):
         super().__init__()
         self._register_load_state_dict_pre_hook(self._batch_shape_state_dict_hook)
@@ -107,7 +109,7 @@ class _Likelihood(Module, _ClassWithDeprecatedBatchSize):
     def variational_log_probability(self, function_dist, observations):
         warnings.warn(
             "Likelihood.variational_log_probability is deprecated. Use Likelihood.expected_log_prob instead.",
-            DeprecationWarning
+            DeprecationWarning,
         )
         return self.expected_log_prob(observations, function_dist)
 
@@ -171,7 +173,7 @@ try:
             # Get the correct sample shape
             # The default sample shape includes all the batch dimensions that can be smapled from
             sample_shape = kwargs.pop("sample_shape", torch.Size([1] * len(function_dist.batch_shape)))
-            sample_shape = sample_shape[:-len(function_dist.batch_shape)]
+            sample_shape = sample_shape[: -len(function_dist.batch_shape)]
             function_samples = function_dist(sample_shape)
             output_dist = self(function_samples, *params, **kwargs)
             with pyro.plate(name_prefix + ".output_values_plate", function_dist.batch_shape[-1], dim=-1):
@@ -208,14 +210,16 @@ try:
             if torch.is_tensor(input):
                 return super().__call__(input, *params, **kwargs)
             # Marginal
-            elif any([
-                isinstance(input, MultivariateNormal),
-                isinstance(input, pyro.distributions.Normal),
-                (
-                    isinstance(input, pyro.distributions.Independent)
-                    and isinstance(input.base_dist, pyro.distributions.Normal)
-                ),
-            ]):
+            elif any(
+                [
+                    isinstance(input, MultivariateNormal),
+                    isinstance(input, pyro.distributions.Normal),
+                    (
+                        isinstance(input, pyro.distributions.Independent)
+                        and isinstance(input.base_dist, pyro.distributions.Normal)
+                    ),
+                ]
+            ):
                 return self.marginal(input, *params, **kwargs)
             # Error
             else:
@@ -224,7 +228,9 @@ try:
                     "torch.Tensor for conditional predictions. Got a {}".format(input.__class__.__name__)
                 )
 
+
 except ImportError:
+
     class Likelihood(_Likelihood):
         def pyro_sample_output(self, *args, **kwargs):
             raise ImportError("Failed to import pyro. Is it installed correctly?")

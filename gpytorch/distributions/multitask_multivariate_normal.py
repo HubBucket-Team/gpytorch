@@ -63,9 +63,7 @@ class MultitaskMultivariateNormal(MultivariateNormal):
 
         # https://github.com/cornellius-gp/gpytorch/issues/468
         covar_blocks_lazy = CatLazyTensor(
-            *[mvn.lazy_covariance_matrix.unsqueeze(0) for mvn in mvns],
-            dim=0,
-            output_device=mean.device
+            *[mvn.lazy_covariance_matrix.unsqueeze(0) for mvn in mvns], dim=0, output_device=mean.device
         )
         covar_lazy = BlockDiagLazyTensor(covar_blocks_lazy, block_dim=0)
         return cls(mean=mean, covariance_matrix=covar_lazy, interleaved=False)

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import torch
-from .marginal_log_likelihood import MarginalLogLikelihood
+
 from .. import settings
+from .marginal_log_likelihood import MarginalLogLikelihood
 
 
 class VariationalELBO(MarginalLogLikelihood):
@@ -22,9 +23,7 @@ class VariationalELBO(MarginalLogLikelihood):
     def forward(self, variational_dist_f, target, **kwargs):
         num_batch = variational_dist_f.event_shape.numel()
 
-        log_likelihood = self.likelihood.expected_log_prob(target, variational_dist_f, **kwargs).div(
-            num_batch
-        )
+        log_likelihood = self.likelihood.expected_log_prob(target, variational_dist_f, **kwargs).div(num_batch)
         kl_divergence = self.model.variational_strategy.kl_divergence()
 
         if kl_divergence.dim() > log_likelihood.dim():

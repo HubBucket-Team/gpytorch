@@ -3,7 +3,7 @@
 .. toctree::
    :maxdepth: 1
    :hidden:
-   
+
    SVGP_Regression_1D.ipynb
    SVGP_Batch_Regression_1D.ipynb
    KISSGP_Regression_1D.ipynb

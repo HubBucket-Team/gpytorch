@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 
-from math import exp, pi
-
 import os
 import random
-import torch
 import unittest
+from math import exp, pi
+
+import torch
+from torch import optim
 
 import gpytorch
-from torch import optim
+from gpytorch.distributions import MultivariateNormal
 from gpytorch.kernels import RBFKernel, ScaleKernel
 from gpytorch.likelihoods import BernoulliLikelihood
 from gpytorch.means import ConstantMean
 from gpytorch.priors import SmoothedBoxPrior
-from gpytorch.distributions import MultivariateNormal
-
 
 train_x = torch.linspace(0, 1, 10)
 train_y = torch.sign(torch.cos(train_x * (16 * pi))).add(1).div(2)

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-import torch
 import warnings
-from .sum_lazy_tensor import SumLazyTensor
+
+import torch
+
+from .. import settings
+from ..utils import broadcasting, pivoted_cholesky, woodbury
 from .diag_lazy_tensor import DiagLazyTensor
 from .psd_sum_lazy_tensor import PsdSumLazyTensor
 from .root_lazy_tensor import RootLazyTensor
-
-from ..utils import broadcasting, pivoted_cholesky, woodbury
-from .. import settings
+from .sum_lazy_tensor import SumLazyTensor
 
 
 class AddedDiagLazyTensor(SumLazyTensor):

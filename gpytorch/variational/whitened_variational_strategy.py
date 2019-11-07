@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 
 import math
+
 import torch
+
 from .. import settings
-from .variational_strategy import VariationalStrategy
-from ..utils.memoize import cached
-from ..lazy import RootLazyTensor, MatmulLazyTensor, CholLazyTensor, \
-    CachedCGLazyTensor, DiagLazyTensor, BatchRepeatLazyTensor, PsdSumLazyTensor
 from ..distributions import MultivariateNormal
+from ..lazy import (
+    BatchRepeatLazyTensor,
+    CachedCGLazyTensor,
+    CholLazyTensor,
+    DiagLazyTensor,
+    MatmulLazyTensor,
+    PsdSumLazyTensor,
+    RootLazyTensor,
+)
+from ..utils.memoize import cached
+from .variational_strategy import VariationalStrategy
 
 
 class WhitenedVariationalStrategy(VariationalStrategy):
@@ -190,8 +199,7 @@ class WhitenedVariationalStrategy(VariationalStrategy):
                 data_covariance = DiagLazyTensor((data_data_covar.diag() - interp_data_data_var).clamp(0, math.inf))
             else:
                 neg_induc_data_data_covar = torch.matmul(
-                    induc_data_covar.transpose(-1, -2).mul(-1),
-                    induc_induc_covar.inv_matmul(induc_data_covar)
+                    induc_data_covar.transpose(-1, -2).mul(-1), induc_induc_covar.inv_matmul(induc_data_covar)
                 )
                 data_covariance = data_data_covar + neg_induc_data_data_covar
             predictive_covar = PsdSumLazyTensor(predictive_covar, data_covariance)

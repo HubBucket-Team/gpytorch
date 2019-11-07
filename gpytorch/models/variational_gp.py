@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import warnings
+
 from ..variational import CholeskyVariationalDistribution, VariationalStrategy
 from .abstract_variational_gp import AbstractVariationalGP
-import warnings
 
 
 class VariationalGP(AbstractVariationalGP):

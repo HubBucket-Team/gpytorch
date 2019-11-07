@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import torch
-from .eig import batch_symeig
+
 from .. import settings
+from .eig import batch_symeig
 
 
 def lanczos_tridiag(

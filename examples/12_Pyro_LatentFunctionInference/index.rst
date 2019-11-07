@@ -5,4 +5,4 @@
    :maxdepth: 1
    :hidden:
 
-   LatentFunctionInference_for_ExpScale.ipynb 
+   LatentFunctionInference_for_ExpScale.ipynb

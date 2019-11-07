@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from ..variational import CholeskyVariationalDistribution, AdditiveGridInterpolationVariationalStrategy
-from ..models.abstract_variational_gp import AbstractVariationalGP
 import warnings
+
+from ..models.abstract_variational_gp import AbstractVariationalGP
+from ..variational import AdditiveGridInterpolationVariationalStrategy, CholeskyVariationalDistribution
 
 
 class AdditiveGridInducingVariationalGP(AbstractVariationalGP):
